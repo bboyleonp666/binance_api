@@ -1,0 +1,5 @@
+*.ipynb_checkpoints/*
+*__pycache__/*
+.env
+ed25519*
+asymmetric-key-generator/
