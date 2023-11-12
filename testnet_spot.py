@@ -14,10 +14,13 @@ load_dotenv()
 API_KEY = os.getenv('API_KEY')
 PRIVATE_KEY_PATH = os.getenv('PRIVATE_KEY_PATH')
 
+import cryptography
+
+type_private_key = cryptography.hazmat.bindings._rust.openssl.ed25519.Ed25519PrivateKey
 
 def main():
     private_key = load_private_key(PRIVATE_KEY_PATH)
-    client = BINANCE_CLIENT(api_key=API_KEY, private_key=private_key, testnet=True)
+    client = BINANCE_CLIENT(api_key=API_KEY, private_key=private_key, futures=False, testnet=True)
 
     # Set up the request parameters
     data = {
@@ -28,10 +31,10 @@ def main():
         'timeInForce':  'GTC',
         'quantity':     '1.0000000',
         'price':        '8000',
-        # 'recvWindow':   '5000',
+        'recvWindow':   '5000',
     }
 
-    # res = client.send(BINANCE_REQUEST.get_price, data=data)
+    res = client.send(BINANCE_REQUEST.get_price, data=data)
     # res = client.send(BINANCE_REQUEST.get_open_orders, data=data)
     # res = client.send(BINANCE_REQUEST.get_account)
     # res = client.send(BINANCE_REQUEST.get_open_orders, data=data)
@@ -56,21 +59,20 @@ def main():
     print(res.json())
 
 
-    res = client.send(BINANCE_REQUEST.get_average_price, data=data)
-    print('Status Code:', res.status_code)
-    print(res.json())
+    # res = client.send(BINANCE_REQUEST.get_average_price, data=data)
+    # print('Status Code:', res.status_code)
+    # print(res.json())
 
     
-    res = client.send(BINANCE_REQUEST.get_exchange_info)
-    for symbol_info in res.json()['symbols']:
-        if symbol_info['symbol'] == 'BTCUSDT':
-            for filter in symbol_info['filters']:
-                if filter['filterType'] == 'PERCENT_PRICE_BY_SIDE':
-                    print(filter)
-                    break
-                # print(filter)
+    # res = client.send(BINANCE_REQUEST.get_exchange_info)
+    # for symbol_info in res.json()['symbols']:
+    #     if symbol_info['symbol'] == 'BTCUSDT':
+    #         for filter in symbol_info['filters']:
+    #             if filter['filterType'] == 'PERCENT_PRICE_BY_SIDE':
+    #                 print(filter)
+    #                 break
+    #             # print(filter)
     
-
 
 if __name__ == '__main__':
     main()

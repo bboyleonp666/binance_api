@@ -3,9 +3,18 @@ import time
 import base64
 import requests
 
+import hmac
+import hashlib
+import cryptography
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
+
 from binance_variables import *
 
+TYPE_PRIVATE_KEY = cryptography.hazmat.bindings._rust.openssl.ed25519.Ed25519PrivateKey
+TYPE_SECRET_KEY = bytes
+
+def load_secret_key(secret_key: str):
+    return bytes(secret_key, 'latin-1')
 
 def load_private_key(private_key_path):
     with open(private_key_path, 'rb') as f:
@@ -14,11 +23,26 @@ def load_private_key(private_key_path):
 
 
 class BINANCE_CLIENT(object):
-    def __init__(self, api_key, private_key, testnet=True):
-        self._url = TESTNET_SPOT_URL if testnet else SPOT_URL
+    def __init__(self, 
+                 api_key: str, 
+                 secret_key: TYPE_SECRET_KEY = None, 
+                 private_key: TYPE_PRIVATE_KEY = None, 
+                 futures: bool = True, 
+                 testnet: bool = True):
+
+        assert secret_key is not None or private_key is not None, 'Either "secret_key" or "private_key" should be provided!'
+
+        if futures:
+            url = (TESTNET_FUTURE_URL if testnet else FUTURE_URL) + API_FUTURE_PREFIX
+        else:
+            url = (TESTNET_SPOT_URL if testnet else SPOT_URL) + API_SPOT_PREFIX
+        
+        self._url = url
         self._api_key = api_key
+        self._secret_key = secret_key
         self._private_key = private_key
         self._headers = {'X-MBX-APIKEY': self._api_key}
+
 
     def send(self, func, data={}):
         """
@@ -33,16 +57,30 @@ class BINANCE_CLIENT(object):
         data['timestamp'] = self._get_timestamp()
         data['signature'] = self._get_signature(data)
 
-        print('Request:', func)
+        print('Request:')
+        print('  Method: ', func.__name__)
+        print('  URL:    ', self._url)
+        print('  Headers:', self._headers)
+        print()
+
         response = func(url=self._url, headers=self._headers, data=data)
         return response
     
     def _get_signature(self, args):
-        """sign the request with private key"""
+        """
+        sign the request with secret key or private key
+        if both are provided, private key has higher priority
+        """
         payload = '&'.join([f'{param}={value}' for param, value in args.items()])
-        signature = base64.b64encode(self._private_key.sign(payload.encode('ASCII')))
+
+        if self._private_key is not None:
+            signature = base64.b64encode(self._private_key.sign(payload.encode('ASCII')))
+
+        else:
+            signature = hmac.new(self._secret_key, msg=bytes(payload, 'latin-1'), digestmod=hashlib.sha256).hexdigest()
+
         return signature
-    
+
     def _get_timestamp(self):
         """UNIX timestamp in milliseconds"""
         return int(time.time() * 1000)
@@ -77,6 +115,10 @@ class BINANCE_REQUEST(object):
     
     @staticmethod
     def get_account(url, headers, data):
+        if '/fapi/v1' in url:
+            # GET /fapi/v1/account is retired, use GET /fapi/v2/account instead
+            url = url.replace('/fapi/v1', '/fapi/v2')
+        
         api_call = API_GET_ACCOUNT
 
         response = requests.get(
@@ -169,6 +211,8 @@ class BINANCE_REQUEST(object):
     
     @staticmethod
     def get_average_price(url, headers, data):
+        assert '/fapi/' not in url, f'"{API_GET_AVERAGE_PRICE}" is not supported in futures!'
+
         api_call = API_GET_AVERAGE_PRICE
         data = {'symbol': data['symbol']}
         
@@ -193,6 +237,8 @@ class BINANCE_REQUEST(object):
     
     @staticmethod
     def get_my_allocations(url, headers, data):
+        assert '/fapi/' not in url, f'"{API_GET_MY_ALLOCATIONS}" is not supported in futures!'
+
         api_call = API_GET_MY_ALLOCATIONS
         
         response = requests.get(
