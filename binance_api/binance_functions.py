@@ -6,20 +6,13 @@ import requests
 import hmac
 import hashlib
 import cryptography
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
-from binance_variables import *
+from .binance_variables import *
 
-TYPE_PRIVATE_KEY = cryptography.hazmat.bindings._rust.openssl.ed25519.Ed25519PrivateKey
+
+from cryptography.hazmat.bindings._rust import openssl
+TYPE_PRIVATE_KEY = openssl.ed25519.Ed25519PrivateKey
 TYPE_SECRET_KEY = bytes
-
-def load_secret_key(secret_key: str):
-    return bytes(secret_key, 'latin-1')
-
-def load_private_key(private_key_path):
-    with open(private_key_path, 'rb') as f:
-        private_key = load_pem_private_key(data=f.read(), password=None)
-    return private_key
 
 
 class BINANCE_CLIENT(object):
