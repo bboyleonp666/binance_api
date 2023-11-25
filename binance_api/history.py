@@ -67,7 +67,7 @@ class History(object):
                 datetime.strptime(date, '%Y-%m-%d')
             except ValueError:
                 raise ValueError("Incorrect date format, should be YYYY-MM-DD")
-        assert datetime.strptime(date, '%Y-%m-%d') < datetime.today(), 'The start date must be earlier than today'
+        assert datetime.strptime(date, '%Y-%m-%d') < datetime.today(), f'The start date must be earlier than today: {datetime.today().date()}'
     
     @staticmethod
     def save(data, output, extract=True):
