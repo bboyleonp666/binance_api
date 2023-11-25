@@ -63,6 +63,13 @@ class History(object):
         assert data_type in ['klines', 'trades'], 'The data_type must be klines or trades'
         assert granularity in ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', 
                                '6h', '8h', '12h', '1d', '3d', '1w', '1M'], 'The granularity is not supported'
+        
+        if frequency == 'daily':
+            try:
+                datetime.strptime(date, '%Y-%m-%d')
+            except ValueError:
+                raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+        assert datetime.strptime(date, '%Y-%m-%d') < datetime.today(), 'The start date must be earlier than today'
     
     @staticmethod
     def save(data, output, extract=True):
