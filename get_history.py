@@ -43,11 +43,9 @@ def main():
                               symbol=args.symbol,
                               granularity=args.granularity,
                               date=args.start)
-    print('Successfully downloaded')
-    print(res)
-    # print(res.text)
-    # with open(f'{args.output}/{args.symbol}-{args.granularity}-{args.start}.zip', 'wb') as f:
-    #     f.write(res.content)
+
+    save_path = f'{args.output}/{args.symbol}-{args.granularity}-{args.start}'
+    downloader.save(res, save_path, extract=True)
 
 if __name__ == '__main__':
     main()

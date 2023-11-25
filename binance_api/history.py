@@ -3,6 +3,10 @@
 Reference: 
   https://www.binance.com/en/support/faq/how-to-download-historical-market-data-on-binance-5810ae42176b4770b880ce1f14932262
 '''
+
+import os
+import io
+import zipfile
 import hashlib
 import requests
 from datetime import datetime
@@ -38,11 +42,20 @@ class History(object):
         print(f"The URL to be downloaded is {url}")
         data = requests.get(url, stream=True)
         if data.ok:
+            print("Download is successful!")
             data_check = requests.get(url + ".CHECKSUM")
+            sha256_checksum = data_check.text.split()[0]
         else:
-            raise Exception(f"Status Code: {data.status_code}: Failed to download from {url}")
+            raise Exception(f"Status Code: {data.status_code}, failed to download from {url}")
         
-        return data, data_check
+        self._verify_sha256(content=data.content, checksum=sha256_checksum)
+        return data
+    
+    def _verify_sha256(self, content, checksum):
+        sha256 = hashlib.sha256()
+        sha256.update(content)
+        assert sha256.hexdigest() == checksum, "Downloaded file is corrupted!"
+        print("Downloaded file checksum is verified!")
         
     def _verify(self, market, frequency, data_type, granularity, date, **kwargs):
         assert market in ['spot', 'futures/cm', 'futures/um'], 'The market must be spot, futures/cm, or futures/um'
@@ -50,3 +63,14 @@ class History(object):
         assert data_type in ['klines', 'trades'], 'The data_type must be klines or trades'
         assert granularity in ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', 
                                '6h', '8h', '12h', '1d', '3d', '1w', '1M'], 'The granularity is not supported'
+    
+    @staticmethod
+    def save(data, output, extract=True):
+        if extract:
+            io_data = io.BytesIO(data.content)
+            with zipfile.ZipFile(io_data) as f:
+                f.extractall(output)
+
+        else:
+            with open(output, 'wb') as f:
+                f.write(data.content)
