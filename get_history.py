@@ -22,8 +22,8 @@ def parse_arg():
     parser.add_argument('--start', type=str, default='2020-01-01', 
                         help='Start month to download (default: 2020-01-01), \
                             \nNote: the current date is not included')
-    # parser.add_argument('--end', type=str, default='2020-01', 
-    #                     help='End date to download (default: 2020-01)')
+    parser.add_argument('--end', type=str, default='2020-01-01', 
+                        help='End date to download (default: 2020-01-01)')
     parser.add_argument('--output', type=str, default='data', 
                         help='Output folder (default: data)')
 
@@ -33,10 +33,30 @@ def parse_arg():
     subprocess.run(['mkdir', '-p', args.output])
     return args
 
+# async def download(**kwargs):
+#     downloader = History()
+#     await downloader.download(**kwargs)
+
 def main():
     args = parse_arg()
     downloader = History()
+    date_range = downloader.gen_date_ranges(
+        start=args.start, 
+        end=args.end, 
+        frequency=args.frequency
+    )
 
+<<<<<<< HEAD
+    # res = downloader.download(market=args.market,
+    #                           frequency=args.frequency,
+    #                           data_type=args.data_type,
+    #                           symbol=args.symbol,
+    #                           granularity=args.granularity,
+    #                           date=args.start)
+
+    # save_path = f'{args.output}/{args.symbol}-{args.granularity}-{args.start}'
+    # downloader.save(res, save_path, extract=True)
+=======
     res = downloader.download(market=args.market,
                               frequency=args.frequency,
                               data_type=args.data_type,
@@ -46,6 +66,7 @@ def main():
 
     save_path = f'{args.output}/{args.symbol}-{args.granularity}-{args.start}'
     downloader.save(res, save_path, extract=True)
+>>>>>>> 30128ea (Feat: download historical data and auto-extract)
 
 if __name__ == '__main__':
     main()
