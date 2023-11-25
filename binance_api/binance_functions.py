@@ -7,7 +7,7 @@ import hmac
 import hashlib
 import cryptography
 
-from .binance_variables import *
+from binance_api.binance_variables import *
 
 
 from cryptography.hazmat.bindings._rust import openssl
