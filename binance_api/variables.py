@@ -27,3 +27,6 @@ API_GET_MY_ALLOCATIONS = '/myAllocations'
 
 API_PLACE_ORDER = '/order'
 API_DELETE_ORDER = '/order'
+
+# Historical data URL
+HISTORY_DATA_URL = 'https://data.binance.vision/data'

@@ -3,3 +3,4 @@
 .env
 ed25519*
 asymmetric-key-generator/
+data/
