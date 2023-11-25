@@ -3,6 +3,7 @@
 Reference: 
   https://www.binance.com/en/support/faq/how-to-download-historical-market-data-on-binance-5810ae42176b4770b880ce1f14932262
 '''
+import hashlib
 import requests
 from datetime import datetime
 
@@ -34,10 +35,14 @@ class History(object):
         ])
 
         
-        print(f"The URL is     {url}")
-        print(f"Comparing with https://data.binance.vision/data/spot/monthly/klines/ADABKRW/1h/ADABKRW-1h-2020-08.zip")
-        response = requests.get(url)
-        return response
+        print(f"The URL to be downloaded is {url}")
+        data = requests.get(url, stream=True)
+        if data.ok:
+            data_check = requests.get(url + ".CHECKSUM")
+        else:
+            raise Exception(f"Status Code: {data.status_code}: Failed to download from {url}")
+        
+        return data, data_check
         
     def _verify(self, market, frequency, data_type, granularity, date, **kwargs):
         assert market in ['spot', 'futures/cm', 'futures/um'], 'The market must be spot, futures/cm, or futures/um'

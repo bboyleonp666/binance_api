@@ -43,14 +43,11 @@ def main():
                               symbol=args.symbol,
                               granularity=args.granularity,
                               date=args.start)
-    if res.status_code == 200:
-        print('Successfully downloaded')
-        print(res)
-        # with open(f'{args.output}/{args.symbol}-{args.granularity}-{args.start}.zip', 'wb') as f:
-        #     f.write(res.content)
-    else:
-        print('Failed to download')
-        print('Status: ', res.status_code)
+    print('Successfully downloaded')
+    print(res)
+    # print(res.text)
+    # with open(f'{args.output}/{args.symbol}-{args.granularity}-{args.start}.zip', 'wb') as f:
+    #     f.write(res.content)
 
 if __name__ == '__main__':
     main()
