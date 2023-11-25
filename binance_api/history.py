@@ -22,7 +22,6 @@ class History(object):
         Example URL:
         https://data.binance.vision/data/spot/monthly/klines/ADABKRW/1h/ADABKRW-1h-2020-08.zip
         """
-
         
         kwargs = locals()
         kwargs.pop('self')
@@ -38,7 +37,6 @@ class History(object):
             "-".join([symbol, granularity, date]) + '.zip'
         ])
 
-        
         print(f"The URL to be downloaded is {url}")
         data = requests.get(url, stream=True)
         if data.ok:
@@ -68,7 +66,7 @@ class History(object):
             try:
                 datetime.strptime(date, '%Y-%m-%d')
             except ValueError:
-                raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+                raise ValueError("Incorrect date format, should be YYYY-MM-DD")
         assert datetime.strptime(date, '%Y-%m-%d') < datetime.today(), 'The start date must be earlier than today'
     
     @staticmethod
