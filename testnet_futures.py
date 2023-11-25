@@ -2,7 +2,7 @@
 
 import os
 
-from binance_api.functions import BINANCE_CLIENT, BINANCE_REQUEST
+from binance_api import BINANCE_CLIENT, BINANCE_REQUEST
 from binance_api.utils import load_private_key, load_secret_key
 from dotenv import load_dotenv
 
