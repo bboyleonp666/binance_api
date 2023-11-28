@@ -46,7 +46,6 @@ def main():
         frequency=args.frequency
     )
 
-<<<<<<< HEAD
     # res = downloader.download(market=args.market,
     #                           frequency=args.frequency,
     #                           data_type=args.data_type,
@@ -56,17 +55,6 @@ def main():
 
     # save_path = f'{args.output}/{args.symbol}-{args.granularity}-{args.start}'
     # downloader.save(res, save_path, extract=True)
-=======
-    res = downloader.download(market=args.market,
-                              frequency=args.frequency,
-                              data_type=args.data_type,
-                              symbol=args.symbol,
-                              granularity=args.granularity,
-                              date=args.start)
-
-    save_path = f'{args.output}/{args.symbol}-{args.granularity}-{args.start}'
-    downloader.save(res, save_path, extract=True)
->>>>>>> 30128ea (Feat: download historical data and auto-extract)
 
 if __name__ == '__main__':
     main()
