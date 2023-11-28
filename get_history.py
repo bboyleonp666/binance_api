@@ -33,9 +33,9 @@ def parse_arg():
     subprocess.run(['mkdir', '-p', args.output])
     return args
 
-# async def download(**kwargs):
-#     downloader = History()
-#     await downloader.download(**kwargs)
+async def download(**kwargs):
+    downloader = History()
+    await downloader.download(**kwargs)
 
 def main():
     args = parse_arg()

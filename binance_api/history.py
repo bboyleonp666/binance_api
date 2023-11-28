@@ -6,10 +6,7 @@ Reference:
 
 import os
 import io
-<<<<<<< HEAD
 import pandas
-=======
->>>>>>> 30128ea (Feat: download historical data and auto-extract)
 import zipfile
 import hashlib
 import requests
@@ -50,18 +47,6 @@ class History(object):
         else:
             raise Exception(f"Status Code: {data.status_code}, failed to download from {url}")
         
-<<<<<<< HEAD
-=======
-        print(f"The URL to be downloaded is {url}")
-        data = requests.get(url, stream=True)
-        if data.ok:
-            print("Download is successful!")
-            data_check = requests.get(url + ".CHECKSUM")
-            sha256_checksum = data_check.text.split()[0]
-        else:
-            raise Exception(f"Status Code: {data.status_code}, failed to download from {url}")
-        
->>>>>>> 30128ea (Feat: download historical data and auto-extract)
         self._verify_sha256(content=data.content, checksum=sha256_checksum)
         return data
     
@@ -77,7 +62,6 @@ class History(object):
         assert data_type in ['klines', 'trades'], 'The data_type must be klines or trades'
         assert granularity in ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', 
                                '6h', '8h', '12h', '1d', '3d', '1w', '1M'], 'The granularity is not supported'
-<<<<<<< HEAD
         
         if frequency == 'daily':
             try:
@@ -85,8 +69,6 @@ class History(object):
             except ValueError:
                 raise ValueError("Incorrect date format, should be YYYY-MM-DD")
         assert datetime.strptime(date, '%Y-%m-%d') < datetime.today(), f'The start date must be earlier than today: {datetime.today().date()}'
-=======
->>>>>>> 30128ea (Feat: download historical data and auto-extract)
     
     @staticmethod
     def save(data, output, extract=True):
@@ -98,7 +80,6 @@ class History(object):
         else:
             with open(output, 'wb') as f:
                 f.write(data.content)
-<<<<<<< HEAD
     
     @staticmethod
     def gen_date_range(start, end, frequency):
@@ -129,5 +110,3 @@ class History(object):
             date_range = pandas.date_range(start=start, end=end, freq='MS').strftime("%Y-%m").tolist()
 
         return date_range
-=======
->>>>>>> 30128ea (Feat: download historical data and auto-extract)
